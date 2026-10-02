@@ -1,0 +1,26 @@
+# Gradle / Android
+.gradle/
+build/
+local.properties
+*.apk
+*.aab
+captures/
+.cxx/
+
+# Vendored at the pinned commit by ./gradlew fetchWhisperCpp (30 MB)
+app/src/main/cpp/whisper.cpp/
+
+# Bundled into assets by ./gradlew fetchModel (31 MB)
+app/src/main/assets/models/*.bin
+
+# Tooling
+.idea/
+*.iml
+.DS_Store
+
+# Release signing
+zeus-release.jks
+
+# ...but the prebuilt APKs are committed on purpose so a TV can be tested
+# without a full toolchain. See releases/README.md.
+!releases/*.apk

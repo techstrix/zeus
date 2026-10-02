@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The only two attributes AOSP recognises (core/res/res/values/attrs.xml,
+  declare-styleable "RecognitionService"). selectableAsDefault makes Zeus appear
+  as a candidate on any phone/tablet voice-input picker, which costs nothing on TV
+  and helps if this is ever installed on a tablet.
+-->
+<recognition-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="com.xorbi.zeus.ui.SetupActivity"
+    android:selectableAsDefault="true" />

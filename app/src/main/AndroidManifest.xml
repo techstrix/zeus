@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      leanback is required="false" so the same APK installs on a phone or an
+      emulator, which is how the pipeline gets exercised without a TV.
+    -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--
+      Needed to point Settings.Secure.VOICE_RECOGNITION_SERVICE at this service.
+      Granted once by `adb shell pm grant`, which works because the permission's
+      protection level includes `development`. See DefaultRecognizer.
+    -->
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Zeus">
+
+        <!--
+          No android:permission here on purpose. BIND_RECOGNITION_SERVICE is not
+          declared by AOSP, so naming it would make it un-grantable and the
+          platform could not bind us. The access gate is
+          SpeechRecognitionManagerServiceImpl.checkPrivilege, mirrored in
+          ZeusRecognitionService.isAllowed().
+        -->
+        <service
+            android:name=".ZeusRecognitionService"
+            android:directBootAware="false"
+            android:exported="true"
+            android:foregroundServiceType="microphone"
+            android:label="@string/recognizer_label">
+            <intent-filter>
+                <action android:name="android.speech.RecognitionService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.speech"
+                android:resource="@xml/recognition_service" />
+        </service>
+
+        <activity
+            android:name=".ui.SetupActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

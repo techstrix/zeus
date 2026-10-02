@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Zeus Dictation</string>
+    <string name="recognizer_label">Zeus Dictation (Whisper)</string>
+
+    <string name="section_status">Recognizer</string>
+    <string name="section_model">Model</string>
+    <string name="section_test">Test</string>
+
+    <string name="make_default">Make Zeus the default recognizer</string>
+    <string name="run_test">Run a dictation test</string>
+    <string name="stop_test">Stop</string>
+    <string name="grant_mic_permission">Grant microphone access</string>
+
+    <string name="status_default_yes">Zeus is the default recognizer.</string>
+    <string name="status_default_no">Zeus is not the default. Current: %1$s</string>
+    <string name="status_permission_missing">Needs WRITE_SECURE_SETTINGS to switch. Run:\n%1$s</string>
+    <string name="status_mic_ok">Microphone access granted.</string>
+    <string name="status_model_ready">Model ready: %1$s</string>
+    <string name="status_idle">Press start, then speak.</string>
+
+    <string name="engine_listening">Listening… speak now</string>
+    <string name="engine_processing">Processing…</string>
+    <string name="engine_partial">Heard: %1$s</string>
+    <string name="engine_result">%1$s</string>
+    <string name="engine_error">Error: %1$s</string>
+    <string name="engine_timing">decode %1$s s · rtf %2$s · %3$d ms of audio</string>
+
+    <string name="model_bundled">Bundled</string>
+    <string name="model_download">Download</string>
+    <string name="model_delete">Delete</string>
+    <string name="model_in_use">In use</string>
+    <string name="downloading">Downloading %1$s… %2$d%%</string>
+
+    <string name="error_busy">The microphone is being used by another app.</string>
+    <string name="error_no_permission">Microphone permission is required.</string>
+    <string name="error_no_match">Nothing was recognised.</string>
+    <string name="error_client">Not the default recognizer.</string>
+    <string name="error_server">Decoding failed.</string>
+
+    <string name="adb_commands">%1$s\n%2$s</string>
+</resources>
