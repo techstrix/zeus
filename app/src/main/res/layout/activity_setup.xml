@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  One landscape screen, four focusable sections. No fragment navigation and no
-  leanback presenter framework: a TV remote only needs up/down/left/right between a
-  handful of rows, and plain focusable views keep this working on a phone too.
+  One landscape screen, focusable rows, DPAD-native.
+
+  No fragment navigation and no leanback presenter framework: a TV remote only
+  needs up/down/left/right between a handful of rows, and plain focusable views
+  keep this working on a phone too.
+
+  The keyboard row is first because it is the path that needs nothing but this
+  APK. The recogniser row is the deeper one that needs a computer.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
+    android:focusable="true"
     android:orientation="vertical"
-    android:padding="32dp"
-    android:focusable="true">
+    android:padding="32dp">
 
     <TextView
         android:id="@+id/title"
@@ -43,11 +48,42 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Recognizer -->
+            <!-- Dictation keyboard: install-only path -->
             <LinearLayout
+                android:id="@+id/row_keyboard"
+                style="@style/Row"
+                android:nextFocusDown="@id/row_recognizer"
+                android:nextFocusUp="@id/row_test">
+
+                <TextView
+                    style="@style/RowTitle"
+                    android:text="@string/section_keyboard" />
+
+                <TextView
+                    android:id="@+id/keyboard_status"
+                    style="@style/RowValue"
+                    android:text="@string/keyboard_not_enabled" />
+
+                <TextView
+                    android:id="@+id/keyboard_hint"
+                    style="@style/RowHint"
+                    android:text="@string/keyboard_step_one" />
+
+                <Button
+                    android:id="@+id/keyboard_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:focusable="true"
+                    android:text="@string/enable_keyboard" />
+            </LinearLayout>
+
+            <!-- Default recogniser: needs adb -->
+            <LinearLayout
+                android:id="@+id/row_recognizer"
                 style="@style/Row"
                 android:nextFocusDown="@id/row_mic"
-                android:nextFocusUp="@id/row_model">
+                android:nextFocusUp="@id/row_keyboard">
 
                 <TextView
                     style="@style/RowTitle"
@@ -68,7 +104,7 @@
                 android:id="@+id/row_mic"
                 style="@style/Row"
                 android:nextFocusDown="@id/row_model"
-                android:nextFocusUp="@id/recognizer_status"
+                android:nextFocusUp="@id/row_recognizer"
                 android:text="@string/grant_mic_permission" />
 
             <!-- Model -->
@@ -93,7 +129,7 @@
             <LinearLayout
                 android:id="@+id/row_test"
                 style="@style/Row"
-                android:nextFocusDown="@id/recognizer_status"
+                android:nextFocusDown="@id/row_keyboard"
                 android:nextFocusUp="@id/row_model">
 
                 <TextView
@@ -109,6 +145,7 @@
                     android:id="@+id/test_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:focusable="true"
                     android:text="@string/run_test" />
             </LinearLayout>

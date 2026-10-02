@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The whole keyboard. One mic, one status line.
+
+  No letter keys: on a TV this exists to replace a bad dictation experience, not
+  to be a worse on-screen keyboard than the one already installed. Anything that
+  still needs typing is better done with whatever keyboard the device already
+  has, reachable from Settings.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#101418"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:minHeight="72dp"
+    android:orientation="horizontal"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp">
+
+    <Button
+        android:id="@+id/ime_mic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:minWidth="140dp"
+        android:minHeight="52dp"
+        android:text="@string/ime_mic"
+        android:textAllCaps="false"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/ime_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="@string/ime_idle"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+</LinearLayout>

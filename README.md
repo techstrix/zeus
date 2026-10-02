@@ -1,38 +1,117 @@
 # Zeus — on-device Whisper dictation for Android TV
 
-Replaces the platform's speech-to-text engine with `whisper.cpp` running locally
-on the TV. Any app that calls `SpeechRecognizer.createSpeechRecognizer(context)`
-gets Whisper instead of the built-in recogniser: press mic, talk, text lands.
-
-No cloud calls, no accounts. The model runs on the TV's CPU.
+`whisper.cpp` running locally on the TV. Press mic, talk, text lands in whatever
+field you are in. No cloud, no accounts, no per-utterance cost.
 
 ---
 
-## Read this first: what this does and does not do on Google TV
+## Use it
+
+Install the APK from [`releases/`](releases/README.md), open **Zeus Dictation**
+from the TV's app list, and press **Choose Zeus as the keyboard**. That opens the
+TV's own keyboard list; tap **Zeus Dictation** there. You are done.
+
+Then, in any app with a normal text field, tap the field and press **Dictate**
+(or the remote's centre button) and speak.
+
+No computer, no adb, no root.
+
+---
+
+## Install
+
+### On the TV (no computer needed)
+
+1. Sideload `releases/zeus-0.2.0.apk` onto the TV (a USB stick, or a file
+   browser, or anything that will install an APK).
+2. Open **Zeus Dictation** from the app list.
+3. Press **Choose Zeus as the keyboard**, then pick **Zeus Dictation** in the
+   list that opens.
+
+### Optional: also replace the platform recogniser
+
+From a computer with the TV connected, after sideloading:
+
+```bash
+./scripts/install-to-tv.sh
+```
+
+which runs:
+
+```bash
+adb install -r app/build/outputs/apk/release/app-release.apk
+adb shell pm grant com.xorbi.zeus android.permission.WRITE_SECURE_SETTINGS
+adb shell settings put secure voice_recognition_service com.xorbi.zeus/.ZeusRecognitionService
+```
+
+Revert either way with:
+
+```bash
+adb shell settings delete secure voice_recognition_service
+```
+
+### Building from source
+
+Needs JDK 21 (with `javac`), Android SDK 36 and NDK `28.2.13676358`.
+
+```bash
+./gradlew assembleRelease   # fetches whisper.cpp + the model on first run
+./gradlew :app:testDebugUnitTest
+```
+
+## Two ways in, and why there are two
+
+| | What it replaces | Needs |
+|---|---|---|
+| **Dictation keyboard** | the microphone in any app with a normal text field | nothing — install and tap |
+| **Default recogniser** | the platform's speech engine, so apps calling `SpeechRecognizer` get Whisper | a computer with adb |
+
+The keyboard is the one to start with. It is the whole experience: a mic button
+wherever you can type. It also works on **Google TV**, where the Assistant keeps
+its own mic (see below).
+
+The recogniser is the deeper change. It makes *other apps' own* dictation buttons
+route through Whisper, which the keyboard cannot reach. It is optional, and it
+genuinely cannot be done from the APK alone — see below.
+
+---
+
+## Why the recogniser route needs a computer
+
+Becoming the platform's default recogniser means writing
+`Settings.Secure.VOICE_RECOGNITION_SERVICE`. Writing that setting requires
+`WRITE_SECURE_SETTINGS`, and **no app can grant itself a permission**. There is no
+manifest flag, no intent, no role that grants it.
+
+The only routes are `adb shell pm grant` (the permission's protection level is
+`signature|privileged|development|role|installer`, and the `development` flag is
+what makes `pm grant` work) or installing as a system app with root.
+
+So: install the APK, and you get the keyboard. For the recogniser, run the two adb
+commands from a machine connected to the TV. Both are in
+[`releases/README.md`](releases/README.md).
+
+---
+
+## Google TV: what you will and will not get
 
 If your TV runs **Google TV** (Shield, Chromecast with Google TV, most modern
 sets), the Google Assistant is a `VoiceInteractionService` holding
-`ROLE_ASSISTANT`. That is a separate mechanism from the speech recogniser and it
-outranks it.
+`ROLE_ASSISTANT` — a separate mechanism from the speech recogniser that outranks
+it.
 
 | | Works | Does not work |
 |---|---|---|
-| Third-party TV apps using `SpeechRecognizer` / `RecognizerIntent` | **yes** | |
-| Platform components that use the default recogniser | **yes** | |
+| **Zeus keyboard mic in any app with a normal text field** | **yes, no adb needed** | |
+| Apps with their own on-screen keyboard (Leanback search, some launchers) | | no — they never show an IME |
+| Third-party TV apps using `SpeechRecognizer` | yes, via the adb route | |
 | Google Assistant, launcher mic button, "Hey Google" | | **no** — unreachable |
 | Apps that hardcode `com.google.android.tts` | | no — they bypass the default |
-| Apps targeting API 30+ that omit `<queries>` for `RecognitionService` | bound anyway, but they may hide their own mic button | |
 
-The Assistant cannot be replaced without becoming `ROLE_ASSISTANT`, which Google
-restricts to preinstalled assistants. That is a platform limit, not a missing
-feature here.
+Replacing the Assistant needs `ROLE_ASSISTANT`, which Google restricts to
+preinstalled assistants. That is a platform limit, not a missing feature.
 
 On an **AOSP Android TV** box (Onix, ADT-3, Nokia Streaming Box, most Chinese
-boxes) the same build has nothing in its way, and there the mic genuinely is
-yours.
-
----
-
 ## Why it is built this way
 
 Two facts, both verified against AOSP source rather than assumed, drive the
@@ -87,49 +166,6 @@ activity for `RecognizerIntent.ACTION_RECOGNIZE_SPEECH`.
 So the app has to make itself the default. `WRITE_SECURE_SETTINGS` is
 `signature|privileged|development|role|installer`, and that `development` flag is
 why `adb shell pm grant` can hand it to a sideloaded app.
-
----
-
-## Install
-
-### Just testing on the TV
-
-Prebuilt APKs live in [`releases/`](releases/README.md) so no toolchain is needed:
-
-```bash
-curl -LO https://github.com/techstrix/zeus/raw/main/releases/zeus-0.1.0.apk
-adb install -r zeus-0.1.0.apk
-adb shell pm grant com.xorbi.zeus android.permission.WRITE_SECURE_SETTINGS
-adb shell settings put secure voice_recognition_service com.xorbi.zeus/.ZeusRecognitionService
-```
-
-### Building from source
-
-```bash
-./gradlew assembleRelease          # fetches whisper.cpp + the model on first run
-./scripts/install-to-tv.sh          # install, grant, set as default
-```
-
-The script runs:
-
-```bash
-adb install -r app/build/outputs/apk/release/app-release.apk
-adb shell pm grant com.xorbi.zeus android.permission.WRITE_SECURE_SETTINGS
-adb shell settings put secure voice_recognition_service com.xorbi.zeus/.ZeusRecognitionService
-```
-
-Requires JDK 21 (with `javac`), Android SDK 36 and NDK `28.2.13676358`.
-
-Revert with:
-
-```bash
-adb shell settings delete secure voice_recognition_service
-```
-
-Then open **Zeus Dictation** from the TV launcher: it shows whether Zeus is
-really the default (re-read every resume, because Google can silently write the
-setting back), lets you switch model, and runs a dictation test through the real
-service with latency numbers.
 
 ---
 
@@ -217,11 +253,13 @@ accuracy against how far behind the transcript runs.
 ## Tests
 
 ```bash
-./gradlew :app:testDebugUnitTest    # endpointer state machine, RMS, resampler
+./gradlew :app:testDebugUnitTest    # endpointer, RMS, resampler, keyboard detection
 ```
 
-16 JVM tests covering the parts most likely to break silently: end-of-speech
-timing, too-short-utterance rejection, dBFS calibration, and resampler decimation.
+22 JVM tests covering the parts most likely to break silently: end-of-speech
+timing, too-short-utterance rejection, dBFS calibration, resampler decimation,
+and the `Settings.Secure.DEFAULT_INPUT_METHOD` parse that decides whether the
+setup screen claims success.
 
 ---
 
@@ -235,6 +273,12 @@ timing, too-short-utterance rejection, dBFS calibration, and resampler decimatio
 - **No `RecognizerIntent` activity.** Nothing on TV resolves
   `ACTION_RECOGNIZE_SPEECH` any more, and the service already covers callers that
   use `SpeechRecognizer` directly.
+- **The keyboard has no letter keys.** On a TV that is a feature: typing stays with
+  whatever keyboard the device already has, switchable from Settings or the remote.
+  But if you install it expecting a full keyboard, that is not what it is.
+- **Apps that draw their own keyboard never show it.** Leanback search fields and
+  several launchers render custom keys instead of an IME, so neither route reaches
+  them.
 - **16 KB page-size devices** (2023+ TV hardware) are untested. ggml's allocators
   are 16 KB-capable in current releases and this is sideloaded rather than
   Play-distributed, but it is unverified.

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Subtype declaration for the dictation keyboard.
+
+  switchToNextInputMethod is deliberately on: a user who lands here wanting to
+  type has to be able to get back out without walking into system settings, and
+  this is the button that lets them.
+-->
+<input-method xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="com.xorbi.zeus.ui.SetupActivity"
+    android:supportsSwitchingToNextInputMethod="true">
+    <subtype
+        android:imeSubtypeLocale="en_US"
+        android:imeSubtypeMode="voice"
+        android:isAsciiCapable="false"
+        android:label="@string/ime_subtype_label" />
+</input-method>

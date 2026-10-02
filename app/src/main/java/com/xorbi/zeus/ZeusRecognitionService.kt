@@ -140,7 +140,7 @@ class ZeusRecognitionService : RecognitionService() {
 
             // Everything runs here, so English is both installed and supported
             // on device, with nothing pending and nothing that needs a network.
-            val english = if (ready) listOf(RecognitionSession.DEFAULT_LANGUAGE) else emptyList()
+            val english = if (ready) listOf(DictationRunner.DEFAULT_LANGUAGE) else emptyList()
             callback.onSupportResult(
                 RecognitionSupport.Builder()
                     .setInstalledOnDeviceLanguages(english)

@@ -64,6 +64,27 @@
                 android:resource="@xml/recognition_service" />
         </service>
 
+        <!--
+          The no-adb route. Becoming the default *recogniser* needs
+          WRITE_SECURE_SETTINGS, which an app cannot grant itself, so it is not
+          something an APK can do on its own. Becoming a *keyboard* only needs the
+          user to tap Zeus in Settings, which is why this exists: a microphone
+          reachable from every app that uses a standard EditText, on any TV,
+          including Google TV where the Assistant keeps its own mic.
+        -->
+        <service
+            android:name=".ui.ZeusInputMethodService"
+            android:exported="true"
+            android:label="@string/ime_subtype_label"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/ime_config" />
+        </service>
+
         <activity
             android:name=".ui.SetupActivity"
             android:exported="true"

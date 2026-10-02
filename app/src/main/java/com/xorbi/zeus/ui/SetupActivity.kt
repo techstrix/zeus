@@ -10,6 +10,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
+import android.provider.Settings
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -43,8 +44,13 @@ class SetupActivity : AppCompatActivity() {
     private lateinit var prefs: Prefs
     private lateinit var models: ModelStore
 
+    private lateinit var recognizerRow: LinearLayout
     private lateinit var recognizerStatus: TextView
     private lateinit var adbHint: TextView
+    private lateinit var keyboardRow: LinearLayout
+    private lateinit var keyboardStatus: TextView
+    private lateinit var keyboardHint: TextView
+    private lateinit var keyboardButton: Button
     private lateinit var micRow: Button
     private lateinit var modelButtons: LinearLayout
     private lateinit var testOutput: TextView
@@ -64,16 +70,50 @@ class SetupActivity : AppCompatActivity() {
         prefs = Prefs(this)
         models = ModelStore(this)
 
+        recognizerRow = findViewById(R.id.row_recognizer)
         recognizerStatus = findViewById(R.id.recognizer_status)
         adbHint = findViewById(R.id.adb_hint)
+        keyboardRow = findViewById(R.id.row_keyboard)
+        keyboardStatus = findViewById(R.id.keyboard_status)
+        keyboardHint = findViewById(R.id.keyboard_hint)
+        keyboardButton = findViewById(R.id.keyboard_button)
         micRow = findViewById(R.id.row_mic)
         modelButtons = findViewById(R.id.model_buttons)
         testOutput = findViewById(R.id.test_output)
         testButton = findViewById(R.id.test_button)
         statusLine = findViewById(R.id.status_line)
 
+        keyboardButton.setOnClickListener { openKeyboardSettings() }
+        keyboardRow.setOnClickListener { openKeyboardSettings() }
         testButton.setOnClickListener { if (speech == null) startTest() else stopTest() }
     }
+
+    /**
+     * Hands the user to the TV's own keyboard list. That screen is
+     * TvSettings' KeyboardActivity, exported on the public
+     * `android.settings.INPUT_METHOD_SETTINGS` action, so this needs no permission
+     * and no adb — the user taps Zeus and is done.
+     */
+    private fun openKeyboardSettings() {
+        val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        runCatching { startActivity(intent) }.onFailure {
+            Log.w(TAG, "no activity for ACTION_INPUT_METHOD_SETTINGS", it)
+            statusLine.text = getString(R.string.error_server)
+        }
+    }
+
+    /**
+     * True when Zeus is the IME actually handling input right now.
+     *
+     * Reads `Settings.Secure.DEFAULT_INPUT_METHOD` rather than
+     * InputMethodManager.getCurrentInputMethodInfo(), which is API 34. This is the
+     * same setting the platform itself consults, and it works back to API 26.
+     */
+    private fun isActiveKeyboard(): Boolean = KeyboardDetection.isActiveKeyboard(
+        contentResolver, packageName,
+    )
 
     override fun onResume() {
         super.onResume()
@@ -91,6 +131,8 @@ class SetupActivity : AppCompatActivity() {
     // --- recognizer status -------------------------------------------------
 
     private fun refreshStatus() {
+        refreshKeyboardStatus()
+
         val isDefault = DefaultRecognizer.isZeusDefault(this)
         val canWrite = DefaultRecognizer.hasPermission(this)
         val current = DefaultRecognizer.describeCurrent(this)
@@ -103,13 +145,13 @@ class SetupActivity : AppCompatActivity() {
 
         if (isDefault) {
             adbHint.visibility = View.GONE
-            recognizerStatus.setOnClickListener { restoreDefault() }
+            recognizerRow.setOnClickListener { restoreDefault() }
             statusLine.text = getString(R.string.status_default_yes)
         } else {
             val commands = DefaultRecognizer.setupCommands()
             adbHint.visibility = View.VISIBLE
             adbHint.text = getString(R.string.adb_commands, commands.first(), commands.last())
-            recognizerStatus.setOnClickListener { makeDefault(canWrite) }
+            recognizerRow.setOnClickListener { makeDefault(canWrite) }
             statusLine.text = if (canWrite) {
                 getString(R.string.make_default)
             } else {
@@ -126,6 +168,17 @@ class SetupActivity : AppCompatActivity() {
         }
         micRow.isEnabled = !hasMic
         micRow.setOnClickListener { if (!hasMic) requestMic() }
+    }
+
+    private fun refreshKeyboardStatus() {
+        val active = isActiveKeyboard()
+        keyboardStatus.text = if (active) {
+            getString(R.string.keyboard_enabled)
+        } else {
+            getString(R.string.keyboard_not_enabled)
+        }
+        keyboardHint.visibility = if (active) View.GONE else View.VISIBLE
+        keyboardButton.visibility = if (active) View.GONE else View.VISIBLE
     }
 
     private fun makeDefault(canWrite: Boolean) {
