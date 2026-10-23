@@ -34,10 +34,12 @@ env:
   VSCODE_QUALITY: 'oss'
 
 jobs:
+  # Build and checks are separate jobs on purpose: together they need more memory than a
+  # 4-core GitHub-hosted runner has, and running them in parallel made the runner disappear.
   compile:
-    name: Compile & Hygiene
+    name: Compile
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -105,10 +107,83 @@ jobs:
       - name: Check /build/ folder
         run: .github/workflows/check-clean-git-state.sh
 
-      - name: Compile & Hygiene
-        run: npm exec -- npm-run-all -lp core-ci-pr extensions-ci-pr hygiene eslint valid-layers-check define-class-fields-check vscode-dts-compile-check tsec-compile-check
+      - name: Compile core & extensions
+        run: |
+          set -e
+          npm run core-ci-pr
+          npm run extensions-ci-pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  checks:
+    name: Hygiene & Type Checks
+    needs: compile
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: Prepare node_modules cache key
+        run: mkdir -p .build && node build/azure-pipelines/common/computeNodeModulesCacheKey.js compile $(node -p process.arch) > .build/packagelockhash
+
+      - name: Restore node_modules cache
+        id: cache-node-modules
+        uses: actions/cache/restore@v6
+        with:
+          path: .build/node_modules_cache
+          key: "node_modules-compile-${{ hashFiles('.build/packagelockhash') }}"
+
+      - name: Extract node_modules cache
+        if: steps.cache-node-modules.outputs.cache-hit == 'true'
+        run: tar -xzf .build/node_modules_cache/cache.tgz
+
+      - name: Install build tools
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: sudo apt update -y && sudo apt install -y build-essential pkg-config libx11-dev libx11-xcb-dev libxkbfile-dev libnotify-bin libkrb5-dev
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: |
+          set -e
+
+          for i in {1..5}; do # try 5 times
+            npm ci && break
+            if [ $i -eq 5 ]; then
+              echo "Npm install failed too many times" >&2
+              exit 1
+            fi
+            echo "Npm install failed $i, trying again..."
+          done
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Hygiene
+        run: npm run hygiene
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ESLint
+        run: npm run eslint
+
+      - name: Layer check
+        run: npm run valid-layers-check
+
+      - name: Class field check
+        run: npm run define-class-fields-check
+
+      - name: vscode.d.ts check
+        run: npm run vscode-dts-compile-check
+
+      - name: tsec check
+        run: npm run tsec-compile-check
 
   linux-cli-tests:
     name: CLI

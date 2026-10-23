@@ -7,7 +7,7 @@ copy of this repository does not need Microsoft's self-hosted pools or larger ru
 
 | Workflow | Trigger | What it does |
 | --- | --- | --- |
-| `pr.yml` (`CI`) | push to `main`, pull request to `main` / `release/*`, manual | Compiles the `build/` folder, runs `core-ci-pr`, `extensions-ci-pr`, `hygiene`, `eslint`, the layer / class-field / `.d.ts` / `tsec` checks, and the Rust CLI tests. |
+| `pr.yml` (`CI`) | push to `main`, pull request to `main` / `release/*`, manual | `Compile` compiles the `build/` folder and then core + extension bundles; `Hygiene & Type Checks` runs `hygiene`, `eslint`, the layer / class-field / `.d.ts` / `tsec` checks. The Rust CLI tests run in their own job. The two jobs are separate so that neither one needs more memory than a 4-core hosted runner has. |
 | `pr.yml` platform matrix | label a pull request `ci:full`, or run the workflow by hand with `platform_tests` | Unit, integration and smoke tests on Linux (`pr-linux-test.yml`), macOS (`pr-darwin-test.yml`) and Windows (`pr-win32-test.yml`). Slow, because it downloads Electron and Playwright per OS. |
 | `no-package-lock-changes.yml`, `no-yarn-lock-changes.yml` | pull request | Fails when a PR from someone without write access changes a lock file. |
 | `telemetry.yml` | pull request | Runs `vscode-telemetry-extractor` over the tree. |
