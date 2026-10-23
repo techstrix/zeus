@@ -607,6 +607,14 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 	private readonly view: electron.WebContentsView;
 	get webContents(): electron.WebContents { return this.view.webContents; }
 
+	/**
+	 * Keeping the session view the same size as the window is not
+	 * instantaneous: on Linux the bounds read from inside a `resize` event
+	 * are still the previous ones, so the layout runs a tick later and
+	 * bursts of events are coalesced.
+	 */
+	private readonly viewLayoutScheduler: RunOnceScheduler;
+
 	override setTransparentChrome(enabled: boolean): void {
 		this.transparentChrome = enabled;
 		this.applyTransparentChrome();
@@ -731,6 +739,8 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 		const host = config.hostWindow?.win && !config.hostWindow.win.isDestroyed() ? config.hostWindow.win : undefined;
 		this.backgrounded = !!host;
 
+		this.viewLayoutScheduler = this._register(new RunOnceScheduler(() => this.layoutView(), 0));
+
 		//#region create browser window
 		{
 			this.configObjectUrl = this._register(protocolMainService.createIPCObjectUrl<INativeWindowConfiguration>(configuration => this.refreshDevCssModules(configuration)));
@@ -764,6 +774,12 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 				this.view.setBackgroundColor(options.backgroundColor);
 			}
 			this._win.contentView.addChildView(this.view, host ? 0 : undefined);
+
+			// Before applying the window state below: a window restored
+			// maximised or fullscreen is resized while it is still hidden, and
+			// those events are the only notification the view gets.
+			this.registerViewLayoutListeners();
+
 			this.layoutView();
 			this.syncSessionView();
 
@@ -784,6 +800,11 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 			if (!host) {
 				this.applyState(this.windowState, hasMultipleDisplays);
 			}
+
+			// The window manager may resize the window for the initial state
+			// without an event we can see (or only with stale bounds), so make
+			// sure the view covers the window once the state has settled.
+			this.scheduleLayoutView();
 
 			this._lastFocusTime = Date.now(); // since we show directly, we need to set the last focus time too
 		}
@@ -916,6 +937,21 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 		this.syncSessionView();
 	}
 
+	/**
+	 * Read the window bounds on the next tick: on Linux the bounds reported
+	 * inside a `resize` event are the ones from before the resize, so laying
+	 * out synchronously leaves a strip of the window uncovered.
+	 */
+	private scheduleLayoutView(): void {
+		this.viewLayoutScheduler.schedule();
+	}
+
+	private registerViewLayoutListeners(): void {
+		for (const event of ['resize', 'maximize', 'unmaximize', 'restore', 'show', 'enter-full-screen', 'leave-full-screen', 'enter-html-full-screen', 'leave-html-full-screen'] as const) {
+			this._register(Event.fromNodeEventEmitter(this._win, event)(() => this.scheduleLayoutView()));
+		}
+	}
+
 	private syncSessionView(): void {
 		this.view.setVisible(!this.backgrounded);
 	}
@@ -969,10 +1005,8 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 			}
 		}));
 
-		// Keep the session view covering the window
-		for (const event of ['resize', 'maximize', 'unmaximize', 'restore', 'enter-full-screen', 'leave-full-screen', 'enter-html-full-screen', 'leave-html-full-screen'] as const) {
-			this._register(Event.fromNodeEventEmitter(this._win, event)(() => this.layoutView()));
-		}
+		// The session view follows the window size; its listeners are registered
+		// in the constructor, before the initial window state is applied.
 
 		// The window title follows the session on screen (a view's document
 		// title does not propagate to the window on its own)
