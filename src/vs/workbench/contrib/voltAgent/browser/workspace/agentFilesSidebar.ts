@@ -32,7 +32,7 @@ import { IExplorerService } from '../../../files/browser/files.js';
 import { ISearchViewModelWorkbenchService } from '../../../search/browser/searchTreeModel/searchViewModelWorkbenchService.js';
 import { VIEWLET_ID as SCM_VIEWLET_ID } from '../../../scm/common/scm.js';
 import { setAgentTooltip } from '../chrome/agentTooltip.js';
-import { INIT_TIMEOUT_MS, runGit } from '../home/agentHomeWorkspaceActions.js';
+import { INIT_TIMEOUT_MS, runGit } from '../home/agentGitRun.js';
 import { trackLentPanesCollapsed } from '../review/agentChangesEditor.js';
 import { AgentScmRepositoryFocus, type AgentScmRepositoryState } from '../review/agentScmRepository.js';
 import { setAgentChangesSession } from '../review/agentTurnsView.js';

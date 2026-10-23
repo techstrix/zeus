@@ -17,7 +17,7 @@ import { IVoltGitBranches, IVoltGitBranchRef, IVoltGitService } from '../../../.
 import { IVoltStdioService } from '../../../../../platform/voltStdio/common/voltStdio.js';
 import { AgentWorktreeTarget } from '../../../../services/voltRuntime/common/git/agentWorktree.js';
 import { ISCMRepository } from '../../../scm/common/scm.js';
-import { INIT_TIMEOUT_MS, runGit } from '../home/agentHomeWorkspaceActions.js';
+import { INIT_TIMEOUT_MS, runGit } from '../home/agentGitRun.js';
 import { IVoltMenuHandle, IVoltMenuItem, IVoltMenuPrompt, IVoltSubmenu, showVoltMenu } from '../ui/menu/voltMenu.js';
 
 type BranchPick =
