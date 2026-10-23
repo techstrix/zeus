@@ -119,7 +119,7 @@ function isImportNode(ts: typeof import('typescript'), node: ts.Node): boolean {
 	return node.kind === ts.SyntaxKind.ImportDeclaration || node.kind === ts.SyntaxKind.ImportEqualsDeclaration;
 }
 
-module _nls {
+namespace _nls {
 
 	export const moduleToNLSKeys: { [name: string /* module ID */]: ILocalizeKey[] /* keys */ } = {};
 	export const moduleToNLSMessages: { [name: string /* module ID */]: string[] /* messages */ } = {};

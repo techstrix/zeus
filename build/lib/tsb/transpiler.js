@@ -1,13 +1,14 @@
 "use strict";
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RolldownTranspiler = exports.OxcTranspiler = exports.ESBuildTranspiler = exports.TscTranspiler = void 0;
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+exports.inlineOxcRuntimeHelpers = inlineOxcRuntimeHelpers;
 const esbuild_1 = __importDefault(require("esbuild"));
 const typescript_1 = __importDefault(require("typescript"));
 const node_worker_threads_1 = __importDefault(require("node:worker_threads"));
@@ -309,6 +310,9 @@ function inlineSourcemap(code, map) {
     const encoded = Buffer.from(JSON.stringify(map)).toString('base64');
     return `${code}\n//# sourceMappingURL=data:application/json;base64,${encoded}`;
 }
+// Oxc's legacy decorator transform imports helpers from `@oxc-project/runtime`.
+// Workbench modules are native ESM, so that bare specifier never resolves.
+// Bodies match TypeScript's `__decorate`, `__param`, and `__metadata` emit helpers.
 const oxcRuntimeHelperBodies = {
     decorate(localName) {
         return [
@@ -345,7 +349,6 @@ function inlineOxcRuntimeHelpers(code) {
     }
     return `${rewritten}\n${bodies.join('\n')}\n`;
 }
-exports.inlineOxcRuntimeHelpers = inlineOxcRuntimeHelpers;
 class OxcTranspiler {
     _logFn;
     _onError;

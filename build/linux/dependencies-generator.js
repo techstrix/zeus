@@ -9,6 +9,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDependencies = getDependencies;
 const child_process_1 = require("child_process");
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const install_sysroot_1 = require("./debian/install-sysroot");
 const calculate_deps_1 = require("./debian/calculate-deps");
@@ -60,7 +61,7 @@ async function getDependencies(packageType, buildDir, applicationName, arch) {
     const files = findResult.stdout.toString().trimEnd().split('\n');
     // Add the tunnel binary (Volt builds don't ship the Rust CLI yet).
     const tunnelPath = path_1.default.join(buildDir, 'bin', product.tunnelApplicationName);
-    if (require("fs").existsSync(tunnelPath)) {
+    if (fs_1.default.existsSync(tunnelPath)) {
         files.push(tunnelPath);
     }
     // Add the main executable.

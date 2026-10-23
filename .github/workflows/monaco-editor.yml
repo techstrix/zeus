@@ -1,20 +1,17 @@
 name: Monaco Editor checks
 
+# Volt does not publish the standalone Monaco editor, so these checks are not part of
+# the normal CI run. Start them by hand from the Actions tab when touching monaco sources.
+
 on:
-  push:
-    branches:
-      - main
-      - release/*
-  pull_request:
-    branches:
-      - main
-      - release/*
-permissions: {}
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   main:
     name: Monaco Editor checks
-    if: github.repository == 'microsoft/vscode' # Volt does not publish the standalone Monaco editor
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:

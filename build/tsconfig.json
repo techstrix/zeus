@@ -27,6 +27,9 @@
 		"**/*.js"
 	],
 	"exclude": [
-		"node_modules/**"
+		"node_modules/**",
+		// Standalone esbuild projects with their own tsconfig (three.js, .ts imports):
+		"volt/deviceStudio/**",
+		"volt/deviceViewer/**"
 	]
 }

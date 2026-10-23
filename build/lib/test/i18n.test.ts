@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/// <reference types="mocha" />
+
 import assert from 'assert';
 import * as i18n from '../i18n';
 

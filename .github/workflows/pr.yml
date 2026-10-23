@@ -1,16 +1,34 @@
-name: Code OSS
+name: CI
+
+# Runs on GitHub-hosted runners so it works on any fork of this repository.
+# Push: compile, hygiene and lint on every commit to main (fast feedback).
+# Pull request: the same, plus the Rust CLI tests.
+# The macOS/Windows/Linux integration matrix is expensive (hours on hosted runners), so it
+# only runs when you ask for it: add the `ci:full` label to a pull request, or start the
+# workflow by hand with `platform_tests` enabled.
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
       - 'release/*'
+  workflow_dispatch:
+    inputs:
+      platform_tests:
+        description: Run the macOS/Windows/Linux integration test matrix (slow)
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions: {}
+permissions:
+  contents: read
+  pull-requests: read
 
 env:
   VSCODE_QUALITY: 'oss'
@@ -18,10 +36,10 @@ env:
 jobs:
   compile:
     name: Compile & Hygiene
-    if: github.repository == 'microsoft/vscode' # needs Microsoft's runners
-    runs-on: [ self-hosted, 1ES.Pool=1es-vscode-oss-ubuntu-22.04-x64 ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
-      - name: Checkout microsoft/vscode
+      - name: Checkout repository
         uses: actions/checkout@v7
 
       - name: Setup Node.js
@@ -73,6 +91,13 @@ jobs:
           mkdir -p .build/node_modules_cache
           tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
 
+      - name: Save node_modules cache
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .build/node_modules_cache
+          key: "node_modules-compile-${{ hashFiles('.build/packagelockhash') }}"
+
       - name: Compile /build/ folder
         run: npm run compile
         working-directory: build
@@ -86,70 +111,81 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linux-cli-tests:
-    name: Linux
+    name: CLI
     uses: ./.github/workflows/pr-linux-cli-test.yml
     with:
       job_name: CLI
       rustup_toolchain: 1.85
 
+  # The platform test matrix is opt-in: label a pull request `ci:full`, or dispatch the
+  # workflow with `platform_tests` checked. Each job below reuses the per-OS workflow.
   linux-electron-tests:
-    name: Linux
+    name: Linux (Electron)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-linux-test.yml
     with:
       job_name: Electron
       electron_tests: true
 
   linux-browser-tests:
-    name: Linux
+    name: Linux (Browser)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-linux-test.yml
     with:
       job_name: Browser
       browser_tests: true
 
   linux-remote-tests:
-    name: Linux
+    name: Linux (Remote)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-linux-test.yml
     with:
       job_name: Remote
       remote_tests: true
 
   macos-electron-tests:
-    name: macOS
+    name: macOS (Electron)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-darwin-test.yml
     with:
       job_name: Electron
       electron_tests: true
 
   macos-browser-tests:
-    name: macOS
+    name: macOS (Browser)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-darwin-test.yml
     with:
       job_name: Browser
       browser_tests: true
 
   macos-remote-tests:
-    name: macOS
+    name: macOS (Remote)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-darwin-test.yml
     with:
       job_name: Remote
       remote_tests: true
 
   windows-electron-tests:
-    name: Windows
+    name: Windows (Electron)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-win32-test.yml
     with:
       job_name: Electron
       electron_tests: true
 
   windows-browser-tests:
-    name: Windows
+    name: Windows (Browser)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-win32-test.yml
     with:
       job_name: Browser
       browser_tests: true
 
   windows-remote-tests:
-    name: Windows
+    name: Windows (Remote)
+    if: ${{ inputs.platform_tests || contains(github.event.pull_request.labels.*.name, 'ci:full') }}
     uses: ./.github/workflows/pr-win32-test.yml
     with:
       job_name: Remote
