@@ -443,6 +443,8 @@ class RolldownTranspiler {
         const t1 = Date.now();
         const source = file.contents.toString('utf8');
         this._jobs.push(loadRolldownUtils().then(({ transformSync }) => {
+            // The rolldown option type is an intersection of overload parameter types.
+            // eslint-disable-next-line local/code-no-dangerous-type-assertions
             const result = transformSync(file.path, source, {
                 sourcemap: true,
                 tsconfig: this._configFilePath,
