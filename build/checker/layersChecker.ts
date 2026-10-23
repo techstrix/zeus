@@ -73,6 +73,13 @@ const RULES: IRule[] = [
 		disallowedTypes: NATIVE_TYPES,
 	},
 
+	// Volt: the agent titlebar asks the desktop main process for the computer name and keeps
+	// the browser fallback label when there is no native host (getIfExists).
+	{
+		target: '**/vs/workbench/contrib/voltAgent/browser/chrome/agentTitlebarHeader.ts',
+		disallowedTypes: [/* Ignore native types that are looked up optionally from here */],
+	},
+
 	// Browser
 	{
 		target: '**/vs/**/browser/**',

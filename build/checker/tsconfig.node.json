@@ -1,8 +1,12 @@
 {
 	"extends": "../../src/tsconfig.base.json",
 	"compilerOptions": {
+		// The agent server (src/vs/server/node/voltAgent) runs the workbench runtime service in
+		// Node, so the node layer program also contains browser files and needs the DOM libs.
 		"lib": [
-			"ES2022"
+			"ES2024",
+			"DOM",
+			"DOM.Iterable"
 		],
 		"types": [
 			"node"
@@ -18,7 +22,9 @@
 		"../../src/vs/monaco.d.ts",
 		"../../src/vscode-dts/vscode.proposed.*.d.ts",
 		"../../src/vscode-dts/vscode.d.ts",
+		"../../node_modules/@webgpu/types/dist/index.d.ts",
 		"../../node_modules/@types/trusted-types/index.d.ts",
+		"../../node_modules/@types/wicg-file-system-access/index.d.ts",
 	],
 	"exclude": [
 		"../../src/**/test/**",
