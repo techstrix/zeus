@@ -1,0 +1,150 @@
+{
+	"channel": "nightly",
+	"version": "0.0.2-nightly.202610240756",
+	"commit": "99e543d5529a8f130bf126b154ac3e4d4b14d237",
+	"tag": "nightly",
+	"releaseUrl": "https://github.com/techstrix/zeus/releases/tag/nightly",
+	"publishedAt": "2026-10-24T08:27:06Z",
+	"platforms": [
+		"darwin",
+		"darwin-arm64",
+		"darwin-universal",
+		"win32-x64",
+		"win32-x64-user",
+		"win32-x64-archive",
+		"win32-arm64",
+		"win32-arm64-user",
+		"win32-arm64-archive",
+		"linux-x64",
+		"linux-arm64",
+		"linux-armhf"
+	],
+	"assets": [
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-darwin-arm64.dmg",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-darwin-arm64.dmg",
+			"size": 114679660,
+			"sha256": "80d8edb071ac95b491eb76949bdb758dcba84b3a706544870b9fb663476e134a"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-darwin-arm64.zip",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-darwin-arm64.zip",
+			"size": 153191784,
+			"sha256": "4f8d6bbb24b4bf5a3a340bdf21f2755678ea32f5d9e672b60a29022fe73ff539"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-darwin-universal.dmg",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-darwin-universal.dmg",
+			"size": 190147681,
+			"sha256": "bd0dc80931248823f485a6617335974d750aead2fd76baa51f1612f3d93f1005"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-darwin-universal.zip",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-darwin-universal.zip",
+			"size": 248509434,
+			"sha256": "7e3b3e5019eeec0c3fcb9aa8bed43fdd647a7206eda69d500804f63f3b54af25"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-darwin-x64.dmg",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-darwin-x64.dmg",
+			"size": 125479585,
+			"sha256": "4f682c2e7dfb0bf05e49e1bca36fa76f363e59a620fa6c6d935561dfc4d5836f"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-darwin-x64.zip",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-darwin-x64.zip",
+			"size": 159854210,
+			"sha256": "ca6adb75cbc9ccfab1eed504e1c725ab93ca3eda101e0f509c81af9a0d29e3e5"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-arm64.deb",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-arm64.deb",
+			"size": 103939476,
+			"sha256": "e039c77323678cf8dc2a3132afc933822aca7ca70235b841c2a418874f3b0b77"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-arm64.rpm",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-arm64.rpm",
+			"size": 104669153,
+			"sha256": "797ec782341a353180bee51585e0bd3a6fdf9af1b36d733443c2a5f891e0c723"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-arm64.tar.gz",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-arm64.tar.gz",
+			"size": 152173667,
+			"sha256": "030480d5862a01eb06c589fa30e2a1b0249ac471a0aab76fb12031789a3f9c09"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-armhf.deb",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-armhf.deb",
+			"size": 102547944,
+			"sha256": "28f91ca65df0a8344dc570b980e1c90e72c89a4aabd1426ae4aa9a555b0d46fc"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-armhf.rpm",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-armhf.rpm",
+			"size": 103371561,
+			"sha256": "01e6ad4ff980456d1b74f3754542f6ab149a6964da5812ef6bc1d79e10e2ca66"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-armhf.tar.gz",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-armhf.tar.gz",
+			"size": 141091818,
+			"sha256": "e77bd6e7b3106b96ea018e8354ebe3f19c73aef7734e503212f7565ffa027255"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-x64.deb",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-x64.deb",
+			"size": 111253016,
+			"sha256": "eb3dc38c1dd52e912d2a3cf1d44a688bd5b0cc1fb4245380e38039ceac020dcf"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-x64.rpm",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-x64.rpm",
+			"size": 111566437,
+			"sha256": "2716ee4b8645e8e0053c1e1ea6dbbe0a104f33ae8ae63908c4c00b79b18978b7"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-linux-x64.tar.gz",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-linux-x64.tar.gz",
+			"size": 154358994,
+			"sha256": "16159c6ee6f03ace74d19e698edbb8f07c736656f6940017404705cc4cb279b9"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-win32-arm64-system-setup.exe",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-win32-arm64-system-setup.exe",
+			"size": 112064175,
+			"sha256": "d6859a2c0bd1d95100ef947bf05fb7b9a4953842ff3ce7f24ace782c09db6e6f"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-win32-arm64-user-setup.exe",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-win32-arm64-user-setup.exe",
+			"size": 112064613,
+			"sha256": "73b3df45870c06f6b92bf6b353df6bf1b6708cfe7707e731182ce5b8ae80d21a"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-win32-arm64.zip",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-win32-arm64.zip",
+			"size": 160011290,
+			"sha256": "f4f45c07e66aa675470a9fa46ee2f63b6b1337e2c3cad49c845305394faf7e84"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-win32-x64-system-setup.exe",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-win32-x64-system-setup.exe",
+			"size": 117191466,
+			"sha256": "09993a7247070e31853695700260e3903a04a6015669d3502e2ac297e68f852e"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-win32-x64-user-setup.exe",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-win32-x64-user-setup.exe",
+			"size": 117191986,
+			"sha256": "4a2ee7ac647503cee331f5c260bb42e6df866dea6201377213fc344ff7b3e060"
+		},
+		{
+			"name": "volt-nightly-0.0.2-nightly.202610240756-win32-x64.zip",
+			"url": "https://github.com/techstrix/zeus/releases/download/nightly/volt-nightly-0.0.2-nightly.202610240756-win32-x64.zip",
+			"size": 161366983,
+			"sha256": "e8b0aace9e42d3ea1d8ebebc16552ae8d216bd5dddd142ef423cb69bf02e89ea"
+		}
+	]
+}
